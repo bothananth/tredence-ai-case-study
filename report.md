@@ -1,135 +1,98 @@
-# Stochastic Self-Pruning Neural Network
+# 📊 Self-Pruning Neural Network using Stochastic Gates
 
-## 1. Overview
-
-Deep neural networks often contain a large number of redundant parameters, which increases computational cost and memory usage. To address this, this project explores a **stochastic self-pruning mechanism**, where the model learns sparse connectivity during training.
-
-Unlike traditional pruning approaches that remove weights after training, this method integrates pruning directly into the learning process using **probabilistic gating**.
+## 📌 Overview
+This project implements a self-pruning neural network using stochastic gating mechanisms to automatically remove less important neurons or weights during training. The model learns which parameters are useful and eliminates redundant ones, improving efficiency without manual pruning.
 
 ---
 
-## 2. Core Idea
-
-Each weight in the network is associated with a **stochastic gate** that determines whether the connection is active or inactive.
-
-Instead of deterministic gating, this implementation uses a **Hard Concrete distribution**, which enables:
-- Differentiable sampling
-- Efficient gradient-based optimization
-- Better exploration of sparse structures
+## 🎯 Objectives
+- Reduce model complexity dynamically during training  
+- Achieve sparsity automatically  
+- Improve computational efficiency  
+- Maintain model accuracy  
 
 ---
 
-## 3. Methodology
+## ⚙️ Methodology
 
-### 3.1 Stochastic Prunable Layer
-
-A custom layer (`StochasticPrunableLinear`) was designed with:
-- Learnable weights and biases  
-- Additional parameters (`log_alpha`) controlling gate behavior  
-
-During forward propagation:
-- Gates are sampled using a stochastic function  
-- Sampled gates are applied to weights  
-- This results in dynamic pruning during training  
+### 🔹 Stochastic Gating
+Each neuron or weight is assigned a learnable gate value sampled between **0 and 1**:
+- Values close to **0 → pruned (inactive)**
+- Values close to **1 → retained (active)**
 
 ---
 
-### 3.2 Sparsity Regularization
-
-The training objective combines classification and sparsity:
-Total Loss = Classification Loss + λ × Sparsity Loss
-
-Where:
-- Sparsity Loss is computed as the sum of gate activations  
-- This encourages many gates to approach zero  
-
-Unlike mean-based penalties, the use of an L1-style formulation provides stronger pressure for sparsity.
+### 🔹 Training Process
+1. Initialize model with stochastic gates  
+2. Perform forward and backward propagation  
+3. Apply sparsity regularization  
+4. Gradually push unnecessary weights toward zero  
 
 ---
 
-### 3.3 Model Enhancements
+## 📈 Stochastic Gate Distribution
 
-To improve training stability and generalization:
-- Batch Normalization layers were introduced  
-- Dropout was added to prevent overfitting  
-- A lower temperature parameter was used for sharper gating behavior  
+![Stochastic Gate Distribution](Stochastic%20Gradient%20Distribution.png)
 
 ---
 
-### 3.4 Training Configuration
-
-- Dataset: CIFAR-10  
-- Optimizer: Adam  
-- Epochs: 15  
-- Batch Size: 128  
-- Device: GPU (if available)  
+## 🔍 Observations
+- Majority of gate values are concentrated near **0**
+- Indicates **high sparsity** in the network  
+- Only a small subset of neurons remain active  
 
 ---
 
-## 4. Experimental Results
-
-| Lambda (λ) | Accuracy (%) | Sparsity (%) |
-|------------|-------------|--------------|
-| 0.05       | 72.1        | 44.8         |
-| 0.1        | 68.3        | 63.5         |
-| 0.2        | 60.7        | 82.9         |
-
----
-
-## 5. Analysis
-
-### 5.1 Effect of Regularization Strength
-
-- Lower λ values maintain higher accuracy but produce limited pruning  
-- Moderate λ values achieve a balanced trade-off  
-- Higher λ values enforce aggressive pruning but reduce accuracy  
+## 🧠 Implementation Details
+- Language: **Python**
+- Core file: `stochastic_self_pruning.py`
+- Techniques used:
+  - Stochastic sampling  
+  - Regularization for sparsity  
+  - Gated forward propagation  
 
 ---
 
-### 5.2 Sparsity Behavior
+## 📊 Results
 
-The gate values exhibit a **bimodal distribution**, where:
-- A large number of gates collapse toward zero  
-- A smaller subset remains active  
-
-This indicates successful separation between essential and redundant connections.
-
----
-
-## 6. Visualization
-
-![Stochastic Gate Distribution](stochastic_gate_distribution.png)
-
-**Figure 1:** Distribution of stochastic gate values after training.
-
-The histogram demonstrates that:
-- Many connections are effectively deactivated  
-- Remaining active connections contribute to model performance  
+| Metric            | Observation |
+|------------------|------------|
+| Sparsity Level   | High |
+| Model Size       | Reduced |
+| Performance      | Comparable to baseline |
 
 ---
 
-## 7. Key Observations
-
-- Stochastic gating improves flexibility in pruning decisions  
-- L1-style sparsity loss is critical for achieving high sparsity  
-- Proper tuning of λ significantly impacts model behavior  
-
----
-
-## 8. Conclusion
-
-This work presents a stochastic self-pruning neural network capable of dynamically learning sparse structures during training.
-
-The approach successfully reduces model complexity while maintaining reasonable predictive performance, making it suitable for deployment in resource-constrained environments.
+## 🚀 Advantages
+- Automatic pruning without manual intervention  
+- Reduced computation and memory usage  
+- Suitable for large-scale neural networks  
 
 ---
 
-## 9. Future Directions
-
-- Extend to convolutional architectures  
-- Explore structured pruning techniques  
-- Introduce annealing strategies for λ  
-- Combine with quantization for further optimization  
+## ⚠️ Limitations
+- Requires careful tuning of hyperparameters  
+- Risk of over-pruning  
+- Training instability in early stages  
 
 ---
 
+## 🔮 Future Work
+- Adaptive pruning thresholds  
+- Integration with GPU acceleration  
+- Testing on real-world datasets  
+- Combining with model quantization  
+
+---
+
+## 📂 Repository Structure
+├── README.md
+├── report.md
+├── stochastic_self_pruning.py
+├── Stochastic Gradient Distribution.png
+
+
+---
+
+## 🧾 Conclusion
+The stochastic self-pruning neural network effectively reduces unnecessary parameters while maintaining performance. The gate distribution clearly demonstrates that the model learns to eliminate redundant components automatically, making it a powerful approach for efficient deep learning.
